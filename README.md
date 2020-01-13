@@ -18,7 +18,12 @@ ansible-playbook -i inventory.ini -k -K cisco-playbook.yaml
 ansible-playbook -i inventory.ini -k -K linux-playbook.yaml
 ```
 
-- To run a ping from a switch with the *raw module*; ask for passwords before connecting (-v outputs command ouput to the screen):
+## Using ansible directly from the command-line (without a playbook)
+
+- To run a ping from a switch with the *raw module*
+  - `-k -K` asks for passwords before connecting
+  - `-v` outputs command ouput to the screen
+  - The raw module is not the only way to run ansible commands without a playbook
 
 ```python
 ansible sw3 -v -i inventory.ini -k -K -m raw -a "ping 4.2.2.2"
