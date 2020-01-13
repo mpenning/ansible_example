@@ -1,0 +1,24 @@
+---
+- hosts: linux_systems                # Ref linux_systems in 'inventory.ini'
+  gather_facts: yes                   # gather facts from linux systems
+  strategy: debug
+  tasks:
+    ############################################################################
+    # Run 'ls -la' on the linux_systems group and save to local disk
+    ############################################################################
+    - name: Use the ansible **command** module to run 'ls -la' in /tmp
+      command: chdir=/tmp ls -la      # Use the command module to ls /tmp
+      become: true                    # Run command with sudo
+      register: ls_output             # save this output into ls_output variable
+
+    - name: save the ls_output using the **copy** module
+      copy:                                      # Use the copy module
+        content: "{{ ls_output.stdout }}"
+        dest: "/home/mpenning/bar.{{ inventory_hostname }}.txt"
+      delegate_to: localhost                     # Save on this local system
+
+    ############################################################################
+    # Gather 'uname -a' as a shell command, running on the linux_systems group
+    ############################################################################
+    - name: Use the ansible **shell** module to run 'uname -a' and save the output on the remote system
+      shell: uname -a > ~/output.txt   # To be saved on the remote system disk

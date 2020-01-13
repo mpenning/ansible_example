@@ -1,0 +1,20 @@
+---
+################################################################################
+# Gather 'show runn' from the l2_access_switches group and save to local disk
+################################################################################
+- hosts: l2_access_switches  # ref l2_access_switches in 'inventory.ini'
+  gather_facts: no           # Don't gather facts from network switches
+  connection: local          # Required for connections to switches
+  tasks:                     # Run the two tasks below...
+    - name: Execute show running-config
+      ios_command:            # ansible ios_command module
+        commands:             # The sequence of commands are saved as a py list
+          - term len 0        # access result as cisco_output.stdout[0]
+          - show runn         # access result as cisco_output.stdout[1]
+      register: cisco_output  # Register this variable to be used in copy, below
+
+    - name: save the 'show runn' command output above to a local file...
+      copy:                                         # Use ansible copy module
+        content: "{{ cisco_output.stdout[1] }}"     # see ios_command, above...
+        dest: ~/sh_run.{{ inventory_hostname }}.txt # hostname should be in DNS
+      delegate_to: localhost                        # **Save on this system**
